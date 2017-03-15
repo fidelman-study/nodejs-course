@@ -11,13 +11,8 @@
   <input type="submit" value="Загрузить">
 </form>
 
-<form id="DELETE">
-  <input type="text" name="file" placeholder="filename.ext">
-  <input type="submit" value="Удалить">
-</form>
-
 <form id="GET">
-  <input type="text" name="file" placeholder="filename.ext">
+  <input id="fileInput" type="text" name="file" placeholder="filename.ext">
   <input type="submit" value="Загрузить">
 </form>
 
@@ -44,14 +39,10 @@
       xhr.send(form.file.files[0]);
       break;
 
-    case 'DELETE':
-      xhr.open('DELETE', fileUrl);
-      xhr.send();
-      break;
-
     case 'GET':
       xhr.open('GET', fileUrl);
-      xhr.send();
+      console.log(fileInput.value);
+      xhr.send(fileInput.value);
       break;
     }
 
