@@ -28,11 +28,12 @@
 'use strict';
 
 let url = require('url');
-let fs = require('fs');
 
-const getContentType = require('./helpers').getContentType;
+const uploadFile = require('./upload-file');
+const sendIndex = require('./send-index');
+const sendFile = require('./send-file');
 
-const indexFile = __dirname + '/public/index.html';
+const { sendStatusCode } = require('./helpers');
 
 require('http').createServer(function(req, res) {
   let pathname = decodeURI(url.parse(req.url).pathname);
@@ -40,63 +41,18 @@ require('http').createServer(function(req, res) {
   switch(req.method) {
   case 'GET':
     if (pathname == '/') {
-      const stream = new fs.ReadStream(indexFile, { encoding: 'utf-8' });
-      const contentType = getContentType(indexFile);
-
-      stream.on('data', (chunk) => {
-        res.setHeader('Content-Type', contentType);
-        res.end(chunk);
-      });
-
-      stream.on('end', () => {
-        console.log('Success');
-      });
-
-      stream.on('error', (err) => {
-        console.error(err);
-        res.statusCode = 500;
-        res.end('Server Error');
-      });
-
+      sendIndex(res);
     } else if (pathname !== '/subscribe') {
       sendFile(pathname, res);
     }
     break;
 
+  case 'POST':
+    uploadFile(req, res);
+    break;
+
   default:
-    res.statusCode = 502;
-    res.end("Not implemented");
+    sendStatusCode(502, res);
   }
 
 }).listen(3000);
-
-function sendFile(filename, res) {
-  const pathname = __dirname + '/files' + filename;
-  const stream = new fs.ReadStream(pathname, { encoding: 'utf-8' });
-
-  let content = '';
-
-  stream.on('data', (chunk) => {
-    content += chunk;
-  });
-
-
-
-  stream.on('end', () => {
-    if (!content) {
-      res.statusCode = 500;
-      res.end('Server Error');
-
-      return;
-    }
-
-    res.setHeader('Content-Type', getContentType(pathname));
-    res.end(content);
-    console.log(`File ${pathname} has been sent`);
-  });
-
-  stream.on('error', () => {
-    res.statusCode = 400;
-    res.end('File is not Found');
-  });
-}
