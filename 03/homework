@@ -1,0 +1,6 @@
+1. KoaJS
+http://koajs.com/
+
+1a. переписать наши тесты на промисы (request-promise, it('', async () => ...))
+
+2*. read-stream-task
