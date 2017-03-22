@@ -10,32 +10,37 @@ http.createServer((req, res) => {
   switch (req.method + ' ' + req.url) {
     case 'GET /':
     // set header
-    //   file error
+    // file error
     // req close
     fs.createReadStream('index.html').pipe(res);
     break;
 
-  case 'GET /subscribe':
-    // check existing
+    case 'GET /subscribe':
+    // req close -> remove client
     console.log("subscribe");
     clients.push(res);
     break;
 
   case 'POST /publish':
     let body = '';
-
-      // req close
+      //  Set encoding
     req
       .on('data', data => {
+        // Check the weight of the body
         body += data;
       })
       .on('end', () => {
         // body to string
+        // non valid JSON (try catch)
         body = JSON.parse(body);
 
+
+        // does body.message exists?
+        // is body.message string?
         console.log("publish '%s'", body.message);
 
         clients.forEach(res => {
+          // add no-cache
           res.end(body.message);
         });
 
