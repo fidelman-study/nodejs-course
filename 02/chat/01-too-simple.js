@@ -8,11 +8,15 @@ let clients = [];
 http.createServer((req, res) => {
 
   switch (req.method + ' ' + req.url) {
-  case 'GET /':
+    case 'GET /':
+    // set header
+    //   file error
+    // req close
     fs.createReadStream('index.html').pipe(res);
     break;
 
   case 'GET /subscribe':
+    // check existing
     console.log("subscribe");
     clients.push(res);
     break;
@@ -20,11 +24,13 @@ http.createServer((req, res) => {
   case 'POST /publish':
     let body = '';
 
+      // req close
     req
       .on('data', data => {
         body += data;
       })
       .on('end', () => {
+        // body to string
         body = JSON.parse(body);
 
         console.log("publish '%s'", body.message);
