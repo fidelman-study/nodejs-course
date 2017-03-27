@@ -4,8 +4,6 @@ const request = require("request").defaults({
   encoding: null
 });
 
-const rp = require('request-promise');
-
 const should = require('should');
 
 // make sure you run it in test env
@@ -49,14 +47,11 @@ describe("Server", () => {
       it("returns 200 & the file", async () => {
         let fixtureContent = fs.readFileSync(`${fixturesRoot}/small.png`);
 
-        const body = await rp.get(`${host}/small.png`);
-
-        // request.get(`${host}/small.png`, (error, response, body) => {
-        //   if (error) return done(error);
-        //   // (!!!) not body.should.eql(fixtureContent),
-        //   // cause buffers are compared byte-by-byte for diff (slow)
-        //   body.equals(fixtureContent).should.be.true();
-        //   done();
+        request.get(`${host}/small.png`, (error, response, body) => {
+          if (error) return done(error);
+          body.equals(fixtureContent).should.be.true();
+          done();
+        })
       });
     });
   });
